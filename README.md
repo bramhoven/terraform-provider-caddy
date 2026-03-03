@@ -1,6 +1,7 @@
 # terraform-provider-caddy
 
 This is a terraform provider to manage the [caddy api](https://caddyserver.com/).
+Forked from [conradludgate/terraform-provider-caddy](https://github.com/conradludgate/terraform-provider-caddy/), but adding missing releases.
 
 ## Setup
 
