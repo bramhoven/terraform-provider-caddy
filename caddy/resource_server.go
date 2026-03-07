@@ -2,6 +2,8 @@ package caddy
 
 import (
 	"encoding/json"
+	"errors"
+	"strings"
 
 	"github.com/conradludgate/terraform-provider-caddy/caddyapi"
 	"github.com/conradludgate/tfutils"
@@ -39,6 +41,11 @@ func (ss Server) Read(d *schema.ResourceData, m interface{}) error {
 
 	server, err := c.GetServer(d.Id())
 	if err != nil {
+		if errors.Is(err, caddyapi.ErrConfigPathNotFound) || strings.Contains(err.Error(), "invalid traversal path") {
+			// Resource path no longer exists in Caddy; clear state so Terraform can recreate if desired.
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 	d.Set("listen", server.Listen)

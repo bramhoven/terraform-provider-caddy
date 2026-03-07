@@ -2,7 +2,7 @@ terraform {
   required_providers {
     caddy = {
       version = "~> 0.2.0"
-      source  = "conradludgate/caddy"
+      source  = "bramhoven/caddy"
     }
   }
 }
@@ -10,7 +10,7 @@ terraform {
 provider "caddy" {
   host            = "unix:///tmp/caddy-admin.sock"
   ssh {
-    host = "terraform@ssh.conradludgate.com:22"
+    host = "terraform@ssh.example.com:22"
     key_file = "/home/oon/.ssh/terraform"
   }
 }
@@ -26,7 +26,7 @@ resource "caddy_server" "foo" {
 
 data "caddy_server_route" "route1" {
   match {
-    host = ["example1.conradludgate.com"]
+    host = ["example1.bramhoven.dev"]
   }
 
   handle {

@@ -1,6 +1,15 @@
 package caddyapi
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+)
+
+// ErrConfigPathNotFound indicates the requested Caddy config path does not exist.
+// This can happen when Caddy has no loaded HTTP app or when the server path was removed.
+var ErrConfigPathNotFound = errors.New("caddy config path not found")
 
 // Server represents the Caddy Server object
 // https://caddyserver.com/docs/json/apps/http/servers/
@@ -73,6 +82,9 @@ func (c *Client) GetServer(id string) (*Server, error) {
 		return nil, fmt.Errorf("GetServer: %w", err)
 	}
 	if resp.IsError() {
+		if resp.StatusCode() == http.StatusNotFound || strings.Contains(string(resp.Body()), "invalid traversal path") {
+			return nil, fmt.Errorf("GetServer: %w", ErrConfigPathNotFound)
+		}
 		return nil, fmt.Errorf("GetServer: %w", StatusError{resp})
 	}
 	return resp.Result().(*Server), nil

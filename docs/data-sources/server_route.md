@@ -7,14 +7,14 @@ description: |-
 
 # Data Source `caddy_server_route`
 
-https://caddyserver.com/docs/json/apps/http/servers/routes/
+[Caddy JSON route docs](https://caddyserver.com/docs/json/apps/http/servers/routes/)
 
 ## Examples
 
 ```tf
 data "caddy_server_route" "foo" {
   match {
-    host = "foo.example.com"
+    host = ["foo.example.com"]
   }
 
   handler {
@@ -28,7 +28,7 @@ data "caddy_server_route" "foo" {
 ```tf
 data "caddy_server_route" "bar" {
   match {
-    host = "bar.example.com"
+    host = ["bar.example.com"]
   }
 
   handler {
