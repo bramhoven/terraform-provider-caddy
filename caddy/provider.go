@@ -19,6 +19,7 @@ func Provider() *schema.Provider {
 		Resources: tfutils.ResourceMap{
 			"caddy_http":   HTTP{},
 			"caddy_server": Server{},
+			"caddy_tls":    TLSApp{},
 		},
 		DataSources: tfutils.DataSourceMap{
 			"caddy_server_route": ServerRoute{},

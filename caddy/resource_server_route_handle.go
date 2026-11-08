@@ -52,6 +52,12 @@ func (srh ServerRouteHandler) Schema() tfutils.SchemaMap {
 		}.IntoSet().
 			Optional(true).
 			MaxItems(1),
+
+		"tracing": tfutils.SchemaMap{
+			"span": tfutils.String().Optional(true),
+		}.IntoSet().
+			Optional(true).
+			MaxItems(1),
 	}
 
 	if srh.Nested > 0 {
@@ -95,6 +101,8 @@ func ServerRouteHandlerFrom(d *MapData) caddyapi.HandleMarshal {
 			return caddyapi.HandleMarshal{Handle: IntoTemplates(d)}
 		case "subroute":
 			return caddyapi.HandleMarshal{Handle: IntoSubroute(d)}
+		case "tracing":
+			return caddyapi.HandleMarshal{Handle: IntoTracing(d)}
 		}
 	}
 
@@ -148,6 +156,18 @@ func IntoTemplates(d *MapData) caddyapi.Templates {
 	}
 }
 
+func IntoTracing(d *MapData) caddyapi.Tracing {
+	return caddyapi.Tracing{
+		Span: GetString(d, "span"),
+	}
+}
+
+func FromTracing(t caddyapi.Tracing) map[string]interface{} {
+	return map[string]interface{}{
+		"span": t.Span,
+	}
+}
+
 func IntoSubroute(d *MapData) caddyapi.Subroute {
 	subroute := caddyapi.Subroute{
 		Routes: ServerRoutesFrom(GetObjectList(d, "route")),
@@ -195,6 +215,9 @@ func ServerRouteHandlerInto(handle caddyapi.HandleMarshal) map[string]interface{
 	case caddyapi.Subroute:
 		key = "subroute"
 		val = FromSubroute(h.(caddyapi.Subroute))
+	case caddyapi.Tracing:
+		key = "tracing"
+		val = FromTracing(h.(caddyapi.Tracing))
 	default:
 		panic("unexpected handler type")
 	}

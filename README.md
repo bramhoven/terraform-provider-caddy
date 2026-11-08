@@ -69,6 +69,165 @@ provider "caddy" {
 }
 ```
 
+## Resources
+
+### `caddy_http`
+
+Manages the Caddy HTTP app configuration (ports, grace period).
+
+### `caddy_server`
+
+Manages individual HTTP servers with routes, error handlers, and logging.
+
+### `caddy_tls`
+
+Manages the Caddy TLS app configuration including certificate automation, certificate loading, and issuer configuration.
+
+#### TLS with automatic ACME certificates
+
+```hcl
+resource "caddy_tls" "tls" {
+  certificates {
+    automate = ["example.com", "www.example.com"]
+  }
+
+  automation {
+    policy {
+      subjects = ["example.com", "www.example.com"]
+
+      issuer {
+        acme {
+          ca    = "https://acme-v02.api.letsencrypt.org/directory"
+          email = "admin@example.com"
+        }
+      }
+    }
+  }
+}
+```
+
+#### TLS with custom certificate files
+
+```hcl
+resource "caddy_tls" "tls" {
+  certificates {
+    load_files {
+      certificate = "/etc/ssl/certs/example.pem"
+      key         = "/etc/ssl/private/example.key"
+      format      = "pem"
+    }
+  }
+}
+```
+
+#### TLS with Cloudflare DNS challenge (wildcard certs)
+
+Requires building Caddy with [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare).
+
+```hcl
+variable "cloudflare_api_token" {
+  type      = string
+  sensitive = true
+}
+
+resource "caddy_tls" "tls" {
+  certificates {
+    automate = ["example.com", "*.example.com"]
+  }
+
+  automation {
+    policy {
+      subjects = ["example.com", "*.example.com"]
+
+      issuer {
+        acme {
+          email = "admin@example.com"
+
+          challenges {
+            dns {
+              provider = jsonencode({
+                name      = "cloudflare"
+                api_token = var.cloudflare_api_token
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### TLS with internal (self-signed) certificates
+
+```hcl
+resource "caddy_tls" "tls" {
+  automation {
+    policy {
+      subjects = ["internal.example.com"]
+
+      issuer {
+        internal {
+          ca = "local"
+        }
+      }
+    }
+  }
+}
+```
+
+#### TLS with ACME challenges and on-demand
+
+```hcl
+resource "caddy_tls" "tls" {
+  automation {
+    policy {
+      subjects = ["example.com"]
+      key_type = "ec256"
+
+      issuer {
+        acme {
+          ca    = "https://acme-v02.api.letsencrypt.org/directory"
+          email = "admin@example.com"
+
+          external_account {
+            key_id  = "your-kid"
+            mac_key = "your-mac-key"
+          }
+
+          challenges {
+            http {
+              alternate_port = 8080
+            }
+            tls_alpn {
+              alternate_port = 8443
+            }
+          }
+        }
+      }
+    }
+
+    on_demand {
+      ask = "https://auth.example.com/check"
+      rate_limit {
+        interval = "1m"
+        burst    = 10
+      }
+    }
+  }
+}
+```
+
+#### Supported issuer types
+
+- **`acme`** — Let's Encrypt, ZeroSSL, or any ACME-compatible CA. Supports `ca`, `email`, `external_account`, `challenges` (http, tls_alpn), and `trusted_roots_pem_files`.
+- **`internal`** — Self-signed certificates from Caddy's built-in CA. Supports `ca`, `lifetime`, and `sign_with_root`.
+- **`zerossl`** — ZeroSSL-specific issuer. Supports `ca`, `email`, `api_key`, and `external_account`.
+
+### `caddy_server_route` (data source)
+
+Outputs a route as JSON for use with `caddy_server`'s `routes` attribute.
+
 ## Example
 
 See `example/main.tf` for a complete example using `caddy_server` and `caddy_server_route`.

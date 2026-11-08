@@ -186,3 +186,66 @@ func (_m *Client) UpdateServerRoutes(id string, routes []caddyapi.Route) error {
 
 	return r0
 }
+
+// CreateTLS provides a mock function with given fields: tls
+func (_m *Client) CreateTLS(tls caddyapi.TLS) error {
+	ret := _m.Called(tls)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(caddyapi.TLS) error); ok {
+		r0 = rf(tls)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetTLS provides a mock function with given fields:
+func (_m *Client) GetTLS() (*caddyapi.TLS, error) {
+	ret := _m.Called()
+
+	var r0 *caddyapi.TLS
+	if rf, ok := ret.Get(0).(func() *caddyapi.TLS); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(*caddyapi.TLS)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateTLS provides a mock function with given fields: tls
+func (_m *Client) UpdateTLS(tls caddyapi.TLS) error {
+	ret := _m.Called(tls)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(caddyapi.TLS) error); ok {
+		r0 = rf(tls)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DeleteTLS provides a mock function with given fields:
+func (_m *Client) DeleteTLS() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}

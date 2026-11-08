@@ -17,4 +17,9 @@ type Client interface {
 	UpdateServerRoutes(id string, routes []caddyapi.Route) error
 	GetServer(id string) (*caddyapi.Server, error)
 	DeleteServer(id string) error
+
+	CreateTLS(tls caddyapi.TLS) error
+	GetTLS() (*caddyapi.TLS, error)
+	UpdateTLS(tls caddyapi.TLS) error
+	DeleteTLS() error
 }
