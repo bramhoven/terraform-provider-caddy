@@ -43,6 +43,10 @@ type Subroute struct {
 	Errors *ServerErrors `json:"errors"`
 }
 
+type Tracing struct {
+	Span string `json:"span,omitempty"`
+}
+
 type HandleMarshal struct {
 	Handle interface{}
 }
@@ -61,6 +65,8 @@ func ToHandlerName(h interface{}) string {
 		return "templates"
 	case Subroute:
 		return "subroute"
+	case Tracing:
+		return "tracing"
 	default:
 		return ""
 	}
@@ -100,6 +106,12 @@ func (s *HandleMarshal) FromHandlerName(h string, b []byte) error {
 		s.Handle = handle
 	case "subroute":
 		handle := Subroute{}
+		if err := json.Unmarshal(b, &handle); err != nil {
+			return err
+		}
+		s.Handle = handle
+	case "tracing":
+		handle := Tracing{}
 		if err := json.Unmarshal(b, &handle); err != nil {
 			return err
 		}

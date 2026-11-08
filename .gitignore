@@ -30,3 +30,14 @@ dist
 *.tfstate*
 *.terraform*
 terraform.d
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+### Built provider binary ###
+/terraform-provider-caddy
